@@ -1,114 +1,117 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
-import React from 'react';
+import React, {Component} from 'react';
 import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
   View,
   Text,
-  StatusBar,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
+import IconFontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconAnt from 'react-native-vector-icons/AntDesign';
+import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import IconEntypo from 'react-native-vector-icons/Entypo';
+import {createAppContainer} from 'react-navigation';
+import {createBottomTabNavigator} from 'react-navigation-tabs';
+import {createStackNavigator} from 'react-navigation-stack';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import Screen from './Screen';
+import BookshelfScreen from './bookshelf/BookshelfScreen';
+import BookScreen from './book/BookScreen';
 
-const App: () => React$Node = () => {
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step hhOne</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
-};
+const MainBottomTab = createBottomTabNavigator(
+  {
+    首页: {
+      screen: Screen,
+    },
+    关注: {
+      screen: BookshelfScreen,
+    },
+    发布: {
+      screen: Screen,
+      navigationOptions: ({navigation}) => ({
+        tabBarLabel: ({focused, tintColor}) => {
+          return <View />;
+        },
+      }),
+    },
+    消息: {
+      screen: Screen,
+    },
+    我的: {
+      screen: Screen,
+    },
+  },
+  {
+    defaultNavigationOptions: ({navigation}) => ({
+      tabBarIcon: ({focused, tintColor}) => {
+        const {routeName} = navigation.state;
+        if (routeName === '首页') {
+          const iconName = `md-home${focused ? '' : ''}`;
+          return <IconIonicons name={iconName} size={26} color={tintColor} />;
+        }
+        if (routeName === '关注') {
+          const iconName = `md-bookmarks${focused ? '' : ''}`;
+          return <IconIonicons name={iconName} size={26} color={tintColor} />;
+        }
+        if (routeName === '发布') {
+          const iconName = `ios-add-circle${focused ? '' : ''}`;
+          return <IconIonicons name={iconName} size={45} color="#039BE5" />;
+        }
+        if (routeName === '消息') {
+          const iconName = `md-notifications${focused ? '' : ''}`;
+          return <IconIonicons name={iconName} size={26} color={tintColor} />;
+        }
+        if (routeName === '我的') {
+          const iconName = `md-person${focused ? '' : ''}`;
+          return <IconIonicons name={iconName} size={26} color={tintColor} />;
+        }
+      },
+    }),
+    tabBarOptions: {
+      activeTintColor: '#039BE5',
+      // inactiveTintColor: '#000',
+      labelStyle: {
+        // fontSize: 11,
+      },
+      style: {
+        // borderTopWidth: 0.5,
+        // borderTopColor: '#c3c3c3',
+        // height: 50,
+        // backgroundColor: '#f8f8f8',
+        // paddingVertical: 2,
+      },
+    },
+  },
+);
 
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
-
-export default App;
+export default createAppContainer(
+  createStackNavigator(
+    {
+      MainBottomTab: {
+        screen: MainBottomTab,
+        navigationOptions: {
+          header: null,
+        },
+      },
+      BookScreen: {
+        screen: BookScreen,
+        navigationOptions: {
+          header: null,
+        },
+      },
+    },
+    {
+      initialRouteName: 'MainBottomTab',
+      defaultNavigationOptions: {
+        headerStyle: {
+          height: 45,
+        },
+        headerTitleStyle: {
+          fontSize: 16,
+        },
+      },
+    },
+  ),
+);
