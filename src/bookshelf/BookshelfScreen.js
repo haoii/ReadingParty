@@ -70,9 +70,11 @@ export default class BookshelfScreen extends Component {
     return [...Array(Math.round(this.state.bookList.length / 3) + 1).keys()].map(i => (
       <View style={{flexDirection: 'row', paddingTop: 25, paddingHorizontal: 25, justifyContent: 'space-between'}}>
         {(() => this.state.bookList.slice(i * 3, i * 3 + 3).map(book => (
-          <TouchableOpacity onPress={() => this.props.navigation.navigate('BookScreen')}>
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate('BookScreen', {book: book})}
+            >
             <View>
-              <Image source={{uri:book.cover_url}} style={{width:81,height:115}} />
+              <Image source={{uri:book.cover_url}} style={{width:81, height:115}} />
               <Text>{book.name}</Text>
             </View>
           </TouchableOpacity>
