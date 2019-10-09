@@ -10,6 +10,7 @@ import {
   ScrollView,
   Image,
   TouchableHighlight,
+  FlatList,
 } from 'react-native';
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
@@ -38,7 +39,68 @@ export default class BookScreen extends Component {
         ideaCnt: 142,
         commentCnt: 502,
       },
+
+      hotQuestions: [
+        {
+          id: 101,
+          user: {
+            name: '王易',
+            avatar: 'https://m.jianbihua.com/sites/default/files/styles/photo640x425/public/images/2018-03/韩风头像10.jpg',
+          },
+
+          type: 'question',
+          commentCnt: 122,
+
+          title: '单核cpu环境下，多线程还有意义吗？',
+          description: '单核cpu环境下，多线程除了在某些业务下提供编程便利性外，还有其他作用吗？是不是任何程序都可以像redis或者libuv那样使用单线程模型，既保证并发又保证性能？',
+          img: 'http://images3.pianshen.com/674/d4/d47013b147ba287c847525fd551bfb6a.png',
+        },
+        {
+          id: 102,
+          user: {
+            name: '程宁宁',
+            avatar: 'http://img.wxcha.com/file/201807/13/9bbc369f6e.jpg',
+          },
+
+          type: 'idea',
+          commentCnt: 47,
+
+          title: '这本书好棒',
+          description: '强力推荐！',
+          img: '',
+        },
+      ],
     };
+
+  }
+
+  _renderHotQuestionsList = () => {
+    return this.state.hotQuestions.map(question => (
+      <View style={{padding: 15, borderBottomColor: '#f8f8f8', borderBottomWidth: 5}}>
+        <Text style={{fontSize: 16, fontWeight: 'bold', width: ScreenSize.width - 30, paddingBottom: 5}}>{question.title}</Text>
+
+        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', paddingBottom: 5}}>
+          <Image source={{uri:question.user.avatar}} style={{width:16, height:16, borderRadius: 8}} />
+          <Text style={{fontSize: 12, paddingLeft: 5}}>{question.user.name}</Text>
+        </View>
+
+        <Text style={{fontSize: 14, width: ScreenSize.width - 30, paddingBottom: 5}}>{question.description}</Text>
+
+        {question.img
+          ? <View style={{alignItems: 'center', paddingBottom: 5}}>
+              <Image source={{uri:question.img}} style={{width:100, height:100}} />
+            </View>
+          : null}
+
+        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start'}}>
+          <Text style={{fontSize: 13, color: 'gray', borderWidth: 0.5, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 5}}
+            >{question.type === 'question' ? '问题' : '想法'}</Text>
+          <Text style={{fontSize: 13, color: 'gray'}}>  ·  </Text>
+          <Text style={{fontSize: 13, color: 'gray'}}>{question.commentCnt} 讨论</Text>
+        </View>
+
+      </View>
+    ));
   }
 
   render() {
@@ -71,60 +133,66 @@ export default class BookScreen extends Component {
           </TouchableOpacity>
         </View>
 
-        {/* 书本信息，“关注、提问、写想法”入口。 */}
-        <View style={{flexDirection: 'row', padding: 10, borderBottomColor: '#f8f8f8', borderBottomWidth: 10}}>
-          <View style={{margin:5, elevation: 5, borderRadius: 5, backgroundColor:'red'}}>
-            <Image source={{uri:book.cover_url}} style={{width:100, height:142, borderRadius: 5}} />
-          </View>
+        <ScrollView>
 
-          <View style={{flex:1, paddingLeft: 10, paddingTop: 10, paddingRight: 5, paddingBottom: 5, justifyContent:'space-between'}}>
-            <View>
-              <Text style={{fontSize: 16, fontWeight: 'bold', width: ScreenSize.width - 160}}>{book.name}</Text>
-              <Text style={{fontSize:11, width: ScreenSize.width - 145}}>{bookBaseInfo}</Text>
-              {/* <Text style={{fontSize:11, width: ScreenSize.width - 145}}>{book.press}</Text> */}
+          {/* 书本信息，“关注、提问、写想法”入口。 */}
+          <View style={{flexDirection: 'row', padding: 10, borderBottomColor: '#f8f8f8', borderBottomWidth: 10}}>
+            <View style={{margin:5, elevation: 5, borderRadius: 5, backgroundColor:'red'}}>
+              <Image source={{uri:book.cover_url}} style={{width:100, height:142, borderRadius: 5}} />
             </View>
 
-            <View>
-              <View style={{flexDirection: 'row', width: ScreenSize.width - 145}}>
-                <Text style={{fontSize:12}}>{book.questionCnt}</Text>
-                <Text style={{fontSize:12, color: 'gray'}}>个问题  </Text>
-                <Text style={{fontSize:12}}>{book.ideaCnt}</Text>
-                <Text style={{fontSize:12, color: 'gray'}}>个想法  </Text>
-                <Text style={{fontSize:12}}>{book.commentCnt}</Text>
-                <Text style={{fontSize:12, color: 'gray'}}>条评论  </Text>
+            <View style={{flex:1, paddingLeft: 10, paddingTop: 10, paddingRight: 5, paddingBottom: 5, justifyContent:'space-between'}}>
+              <View>
+                <Text style={{fontSize: 16, fontWeight: 'bold', width: ScreenSize.width - 160}}>{book.name}</Text>
+                <Text style={{fontSize:11, width: ScreenSize.width - 145}}>{bookBaseInfo}</Text>
+                {/* <Text style={{fontSize:11, width: ScreenSize.width - 145}}>{book.press}</Text> */}
               </View>
-              <View style={{flexDirection: 'row', paddingTop:5, justifyContent: 'space-between'}}>
-                <TouchableHighlight style={[styles.operateButtonView, {borderWidth: 0, backgroundColor: '#039BE5'}]}>
-                  <Text style={{color: 'white'}}>关注</Text>
-                </TouchableHighlight>
-                <TouchableHighlight style={styles.operateButtonView}>
-                  <Text>提问题</Text>
-                </TouchableHighlight>
-                <TouchableHighlight style={styles.operateButtonView}>
-                  <Text>写想法</Text>
-                </TouchableHighlight>
+
+              <View>
+                <View style={{flexDirection: 'row', width: ScreenSize.width - 145}}>
+                  <Text style={{fontSize:12}}>{book.questionCnt}</Text>
+                  <Text style={{fontSize:12, color: 'gray'}}>个问题  </Text>
+                  <Text style={{fontSize:12}}>{book.ideaCnt}</Text>
+                  <Text style={{fontSize:12, color: 'gray'}}>个想法  </Text>
+                  <Text style={{fontSize:12}}>{book.commentCnt}</Text>
+                  <Text style={{fontSize:12, color: 'gray'}}>条评论  </Text>
+                </View>
+                <View style={{flexDirection: 'row', paddingTop:5, justifyContent: 'space-between'}}>
+                  <TouchableHighlight style={[styles.operateButtonView, {borderWidth: 0, backgroundColor: '#039BE5'}]}>
+                    <Text style={{color: 'white'}}>关注</Text>
+                  </TouchableHighlight>
+                  <TouchableHighlight style={styles.operateButtonView}>
+                    <Text>提问题</Text>
+                  </TouchableHighlight>
+                  <TouchableHighlight style={styles.operateButtonView}>
+                    <Text>写想法</Text>
+                  </TouchableHighlight>
+                </View>
+              </View>
+
+            </View>
+          </View>
+
+          {/* 范围选择 */}
+          <ScrollableTabView renderTabBar={() => <BookTabBar/>} style={{height:600}}>
+
+            {/* 热门讨论 */}
+            <View tabLabel="热门" style={{}}>
+              {this._renderHotQuestionsList()}
+            </View>
+
+            {/* 按章节排序的讨论 */}
+            <View tabLabel="章节" style={{}}>
+              <View style={{height: 200, width: 300}}>
+                <Text>ttt</Text>
               </View>
             </View>
 
-          </View>
-        </View>
+          </ScrollableTabView>
 
-        {/* 范围选择 */}
-        <ScrollableTabView renderTabBar={() => <BookTabBar/>}>
-          <View tabLabel="热门" style={{}}>
-            <View style={{height: 200, width: 300}}>
-              <Text>ttt</Text>
-            </View>
-          </View>
-          <View tabLabel="章节" style={{}}>
-            <View style={{height: 200, width: 300}}>
-              <Text>ttt</Text>
-            </View>
-          </View>
+          <Text>ttt</Text>
 
-        </ScrollableTabView>
-
-        <Text>ttt</Text>
+        </ScrollView>
       </View>
     );
   }
