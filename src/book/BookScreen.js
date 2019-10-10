@@ -114,6 +114,30 @@ export default class BookScreen extends Component {
     });
   }
 
+  _submitPost = () => {
+
+    let formData = new FormData();
+    formData.append("user_id", 1);
+    formData.append("book_id", 2);
+    formData.append("type", 'question');
+    formData.append("title", 'a title');
+    formData.append("description", 'a description');
+    formData.append("img", 'a img');
+    formData.append("commentCnt", 123);
+    
+    fetch('http://localhost:8080/question/insertQuestion/',{
+      method:'POST',
+      body:formData,
+      credentials: 'same-origin',
+    })
+    .then((response) => response.json())
+    .then((responseJson)=>{
+      alert(responseJson.msg);
+    }).catch((error) => {
+      alert('服务器出错了');
+    });
+  }
+
   _renderHotQuestionsList = () => {
     return this.state.hotQuestions.map(question => (
       <View style={{padding: 15, borderBottomColor: '#f8f8f8', borderBottomWidth: 5}}>
