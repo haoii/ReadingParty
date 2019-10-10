@@ -66,16 +66,41 @@ export default class BookshelfScreen extends Component {
     };
   }
 
+  componentDidMount() {
+    this._fetchData();
+  }
+
+  _fetchData = () => {
+    fetch(URL.allBooks, {credentials: 'same-origin'})
+      .then(response => response.json())
+      .then(responseJson => {
+        if (responseJson.msg === 'success') {
+          this.setState({bookList: responseJson.data});
+        }
+        // else if (responseJson.msg === 'not_logged_in') {
+        //   this.setState({refreshing: false, got_no_data:true, no_data_hint: '您还没有登录~'});
+        //   this.props.navigation.navigate('LoginScreen');
+        // } else {
+        //   this.setState({refreshing: false, got_no_data:true, no_data_hint: '出现未知错误'});
+        // }
+
+      }).catch((error) => {
+        // this.setState({refreshing: false, got_no_data:true, no_data_hint: '服务器出错了'});
+        alert(error);
+      });
+  }
+
   _renderBooks = () => {
     return [...Array(Math.round(this.state.bookList.length / 3) + 1).keys()].map(i => (
-      <View style={{flexDirection: 'row', paddingTop: 25, paddingHorizontal: 25, justifyContent: 'space-between'}}>
+      <View style={{flexDirection: 'row', paddingTop: 25, paddingLeft: 25, justifyContent: 'flex-start'}}>
         {(() => this.state.bookList.slice(i * 3, i * 3 + 3).map(book => (
           <TouchableOpacity
             onPress={() => this.props.navigation.navigate('BookScreen', {book: book})}
+            style={{paddingRight: (ScreenSize.width - 293) / 2}}
             >
             <View>
-              <Image source={{uri:book.cover_url}} style={{width:81, height:115}} />
-              <Text>{book.name}</Text>
+              <Image source={{uri:book.cover_url}} style={{width:81, height:115, borderWidth: 0.5, borderColor: 'lightgray'}} />
+              <Text style={{width: 81, fontSize: 12}}>{book.name}</Text>
             </View>
           </TouchableOpacity>
         )))()}

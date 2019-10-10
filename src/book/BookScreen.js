@@ -25,6 +25,9 @@ export default class BookScreen extends Component {
 
   constructor(props) {
     super(props);
+
+    this.book = this.props.navigation.getParam('book', null);
+
     this.state = {
       bookInfo: {
         name: '深入理解计算机系统',
@@ -43,10 +46,8 @@ export default class BookScreen extends Component {
       hotQuestions: [
         {
           id: 101,
-          user: {
-            name: '王易',
-            avatar: 'https://m.jianbihua.com/sites/default/files/styles/photo640x425/public/images/2018-03/韩风头像10.jpg',
-          },
+          userName: '王易',
+          userAvatar: 'https://m.jianbihua.com/sites/default/files/styles/photo640x425/public/images/2018-03/韩风头像10.jpg',
 
           type: 'question',
           commentCnt: 122,
@@ -57,10 +58,8 @@ export default class BookScreen extends Component {
         },
         {
           id: 102,
-          user: {
-            name: '程宁宁',
-            avatar: 'http://img.wxcha.com/file/201807/13/9bbc369f6e.jpg',
-          },
+          userName: '程宁宁',
+          userAvatar: 'http://img.wxcha.com/file/201807/13/9bbc369f6e.jpg',
 
           type: 'idea',
           commentCnt: 47,
@@ -74,14 +73,55 @@ export default class BookScreen extends Component {
 
   }
 
+  componentDidMount() {
+    this._fetchData();
+  }
+
+  _fetchData = () => {
+    fetch(URL.questionsByBookId + this.book.id + '/', {credentials: 'same-origin'})
+      .then(response => response.json())
+      .then(responseJson => {
+        if (responseJson.msg === 'success') {
+          this.setState({hotQuestions: responseJson.data});
+        }
+        // else if (responseJson.msg === 'not_logged_in') {
+        //   this.setState({refreshing: false, got_no_data:true, no_data_hint: '您还没有登录~'});
+        //   this.props.navigation.navigate('LoginScreen');
+        // } else {
+        //   this.setState({refreshing: false, got_no_data:true, no_data_hint: '出现未知错误'});
+        // }
+
+      }).catch((error) => {
+        // this.setState({refreshing: false, got_no_data:true, no_data_hint: '服务器出错了'});
+        alert(error);
+      });
+  }
+
+  _login_test2 = () => {
+
+    let formData = new FormData();
+    formData.append('username', 'hgf');
+    formData.append('password', '1');
+
+    fetch('http://localhost:8080/login', {
+      method:'POST',
+      body:formData,
+    })
+    .then((response) => response.json())
+    .then((data) => alert(data.msg))
+    .catch((error)=>{
+      alert('服务器出错了');
+    });
+  }
+
   _renderHotQuestionsList = () => {
     return this.state.hotQuestions.map(question => (
       <View style={{padding: 15, borderBottomColor: '#f8f8f8', borderBottomWidth: 5}}>
         <Text style={{fontSize: 16, fontWeight: 'bold', width: ScreenSize.width - 30, paddingBottom: 5}}>{question.title}</Text>
 
         <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', paddingBottom: 5}}>
-          <Image source={{uri:question.user.avatar}} style={{width:16, height:16, borderRadius: 8}} />
-          <Text style={{fontSize: 12, paddingLeft: 5}}>{question.user.name}</Text>
+          <Image source={{uri:question.userAvatar}} style={{width:16, height:16, borderRadius: 8}} />
+          <Text style={{fontSize: 12, paddingLeft: 5}}>{question.userName}</Text>
         </View>
 
         <Text style={{fontSize: 14, width: ScreenSize.width - 30, paddingBottom: 5}}>{question.description}</Text>
@@ -104,7 +144,7 @@ export default class BookScreen extends Component {
   }
 
   render() {
-    let book = this.state.bookInfo;
+    let book = this.book;
     let bookBaseInfo = book.author + ' / ' + book.press + ' / ' + book.publishDate;
     if (book.translator) {
       bookBaseInfo = bookBaseInfo + ' / ' + book.translator + '译';
